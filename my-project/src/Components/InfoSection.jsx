@@ -1,51 +1,69 @@
+import {
+  FaShippingFast,
+  FaHeadset,
+  FaMoneyBillWave,
+  FaLock,
+  FaTag,
+} from "react-icons/fa";
 
-import { FaShippingFast } from "react-icons/fa";
-import { FaHeadset } from "react-icons/fa";
-import { FaMoneyBillWave } from "react-icons/fa";
-import { FaLock } from "react-icons/fa";
-import { FaTag } from "react-icons/fa";
 const InfoSection = () => {
-    const infoItems = [
+  const infoItems = [
     {
-        icon:<FaShippingFast className="text-3xl text-red-600"/>,
-        title:'Free Shipping',
-        description:'Get your ordered delivery with no extra cost',
+      icon: <FaShippingFast />,
+      title: "Free Shipping",
+      description: "Get your order delivered with no extra cost",
     },
     {
-        icon:<FaHeadset className="text-3xl text-red-600"/>,
-        title:'Support 24/7',
-        description:'We are here to assist you anytime',
+      icon: <FaHeadset />,
+      title: "24/7 Support",
+      description: "We are here to assist you anytime",
     },
     {
-        icon:<FaMoneyBillWave className="text-3xl text-red-600"/>,
-        title:'100% Money back',
-        description:'Full refund if you are not satishfied',
+      icon: <FaMoneyBillWave />,
+      title: "Money Back Guarantee",
+      description: "Full refund if you are not satisfied",
     },
     {
-        icon:<FaLock className="text-3xl text-red-600"/>,
-        title:'Payment Secure',
-        description:'Your payment information is safe with us',
+      icon: <FaLock />,
+      title: "Secure Payment",
+      description: "Your payment information is safe with us",
     },
     {
-        icon:<FaTag className="text-3xl text-red-600"/>,
-        title:'Discount',
-        description:'Enjoy the best prices on our products',
-    }
-    ];
+      icon: <FaTag />,
+      title: "Best Offers",
+      description: "Enjoy the best prices on our products",
+    },
+  ];
 
   return (
-    <div className="bg-gray-100 pb-8 pt-12">
-        <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 ">
-            {infoItems.map((item,index)=>(
-                <div key={index} className="flex flex-col items-center text-center p-4 border rounded-lg shadow-md bg-red-100 transform transition-transform duration-300 hover:scale-105 cursor-pointer">
-                    {item.icon}
-                    <h3 className="mt-4 text-xl font-semibold">{item.title}</h3>
-                    <p className="mt-2 text-gray-600">{item.description}</p>
-                </div>
-            ))}
-        </div>
-    </div>
-  )
-}
+    <section className="bg-gray-50 py-12">
+      <div className="container mx-auto px-4 md:px-16 lg:px-24">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+          {infoItems.map((item, index) => (
+            <div
+              key={index}
+              className="bg-white rounded-2xl p-6 text-center border shadow-sm hover:shadow-lg transition-shadow cursor-pointer"
+            >
+              {/* Icon */}
+              <div className="w-14 h-14 mx-auto flex items-center justify-center rounded-full bg-red-100 text-red-600 text-2xl">
+                {item.icon}
+              </div>
 
-export default InfoSection
+              {/* Title */}
+              <h3 className="mt-4 text-lg font-semibold text-gray-800">
+                {item.title}
+              </h3>
+
+              {/* Description */}
+              <p className="mt-2 text-sm text-gray-500">
+                {item.description}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default InfoSection;

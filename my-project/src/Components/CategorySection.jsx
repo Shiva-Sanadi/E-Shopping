@@ -3,35 +3,51 @@ import WomenCategory from "../assets/Images/women.jpg";
 import KidsCategory from "../assets/Images/kids.jpg";
 
 const categories = [
-    {
-        title:'Men',
-        imageurl:ManCategory,
-    },
-    {
-        title:'Women',
-        imageurl:WomenCategory,
-    },
-    {
-        title:'Kids',
-        imageurl:KidsCategory
-    }
+  {
+    title: "Men",
+    imageurl: ManCategory,
+  },
+  {
+    title: "Women",
+    imageurl: WomenCategory,
+  },
+  {
+    title: "Kids",
+    imageurl: KidsCategory,
+  },
+];
 
-]
 const CategorySection = () => {
   return (
-    <div className="container mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6 ">
-        {categories.map((category,index)=>(
-            <div key={index} className="relative h-64  transform transition-transform duration-300 hover:scale-105 cursor-pointer">
-                <img src={category.imageurl} alt=""  className="w-full h-full object-cover rounded-lg shadow-md opacity-3 "/>
-                <div className="absolute bottom-0 left-0 w-full bg-red-100 p-4 hover:bg-red-200" >
-                    <p className="text-xl font-bold text-gray-800">{category.title}</p>
-                    <p className="text-red-600 font-semibold font-sans">View All</p>
-                </div>
-            </div>  
-        ))}
- 
-    </div>
-  )
-}
+    <section className="container mx-auto px-4 md:px-16 lg:px-24 py-12">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        {categories.map((category, index) => (
+          <div
+            key={index}
+            className="relative h-72 rounded-2xl overflow-hidden group cursor-pointer shadow-sm hover:shadow-lg transition-shadow"
+          >
+            {/* Image */}
+            <img
+              src={category.imageurl}
+              alt={category.title}
+              className="w-full h-full object-cover"
+            />
 
-export default CategorySection
+            {/* Dark gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+
+            {/* Content */}
+            <div className="absolute bottom-0 left-0 w-full p-6 text-white">
+              <h3 className="text-2xl font-bold">{category.title}</h3>
+              <p className="mt-1 text-sm text-gray-200 group-hover:text-red-400 transition-colors">
+                View Collection →
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+};
+
+export default CategorySection;
