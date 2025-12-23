@@ -1,114 +1,149 @@
-import image from '../assets/Images/shop.jpg'
-import profile from '../assets/Images/women.jpg'
+import shopImage from "../assets/Images/shop.jpg";
+import profileImage from "../assets/Images/women.jpg";
 
 const AboutUs = () => {
   return (
-    <div className="min-h-screen bg-green-200 py-10">
-      <div className="container mx-auto px-6">
-        {/* Hero Section */}
-        <div className="bg-red-200 rounded-lg shadow-lg p-8 mb-10 text-center">
-          <h1 className="text-3xl font-bold text-gray-800 mb-4">
-            About Us
+    <div className="min-h-screen bg-gray-50">
+
+      {/* HERO SECTION */}
+      <section className="relative bg-gradient-to-r from-red-600 to-red-500 text-white">
+        <div className="container mx-auto px-6 py-20 text-center">
+          <h1 className="text-4xl md:text-5xl font-extrabold mb-6">
+            About E-Shop
           </h1>
-          <p className="text-gray-600">
-            Welcome to <span className="font-semibold">Your E-Shop</span> – where quality meets convenience. 
-            We’re passionate about delivering the best products and customer experience to help you shop smarter and live better.
+          <p className="max-w-3xl mx-auto text-lg text-red-100 leading-relaxed">
+            E-Shop is your trusted online marketplace — delivering quality,
+            affordability, and convenience straight to your doorstep.
+            We’re here to make shopping simple, fast, and enjoyable.
           </p>
         </div>
+      </section>
 
-        {/* Mission Section */}
-        <div className="flex flex-wrap items-center mb-10">
-          <div className="w-full md:w-1/2 mb-6 md:mb-0 px-4">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+      {/* MISSION & VISION */}
+      <section className="container mx-auto px-6 py-16">
+        <div className="grid md:grid-cols-2 gap-12 items-center">
+          <div>
+            <h2 className="text-3xl font-bold text-gray-800 mb-4">
               Our Mission
             </h2>
-            <p className="text-gray-600">
-              Our mission is to simplify online shopping by offering a curated selection of top-quality products at unbeatable prices. 
-              We aim to build trust, deliver excellent service, and create a platform that people love to visit.
+            <p className="text-gray-600 leading-relaxed mb-6">
+              Our mission is to empower customers by providing a seamless,
+              secure, and satisfying shopping experience. We carefully select
+              high-quality products and offer them at fair prices, backed by
+              outstanding customer service.
+            </p>
+            <p className="text-gray-600 leading-relaxed">
+              We believe shopping should be effortless, transparent, and
+              enjoyable — every single time.
             </p>
           </div>
-          <div className="w-full md:w-1/2 px-4">
+
+          <div className="relative">
             <img
-              src={image}
+              src={shopImage}
               alt="Our Mission"
-              className="rounded-lg shadow-md"
+              className="rounded-2xl shadow-lg"
             />
+            <div className="absolute -bottom-6 -left-6 bg-red-600 text-white px-6 py-4 rounded-xl shadow-lg">
+              <p className="font-semibold">Trusted by 10,000+ customers</p>
+            </div>
           </div>
         </div>
+      </section>
 
-        {/* Values Section */}
-        <div className="bg-red-200 rounded-lg shadow-lg p-8 mb-10">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
+      {/* CORE VALUES */}
+      <section className="bg-white py-16">
+        <div className="container mx-auto px-6">
+          <h2 className="text-3xl font-bold text-center text-gray-800 mb-12">
             Our Core Values
           </h2>
-          <ul className="space-y-4 text-gray-600">
-            <li>
-              <span className="font-semibold">Customer First:</span> We prioritize customer satisfaction in every decision we make.
-            </li>
-            <li>
-              <span className="font-semibold">Quality:</span> Only the best products that meet our standards make it to our store.
-            </li>
-            <li>
-              <span className="font-semibold">Sustainability:</span> We strive to reduce our environmental impact and support eco-friendly initiatives.
-            </li>
-            <li>
-              <span className="font-semibold">Innovation:</span> Continuously improving and adapting to serve our customers better.
-            </li>
-          </ul>
-        </div>
 
-        {/* Team Section */}
-        <div className="text-center mb-10">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-6">
-            Meet the Team
-          </h2>
-          <p className="text-gray-600 mb-8">
-            Our dedicated team of professionals is committed to bringing you the best shopping experience.
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-red-200 rounded-lg shadow-md p-6">
-              <img
-                src={profile}
-                alt="Team Member"
-                className="rounded-full mx-auto mb-4"
-              />
-              <h3 className="text-lg font-bold text-gray-800">John Doe</h3>
-              <p className="text-gray-600">Founder & CEO</p>
-            </div>
-            <div className="bg-red-200 rounded-lg shadow-md p-6">
-              <img
-                src={profile}
-                alt="Team Member"
-                className="rounded-full mx-auto mb-4"
-              />
-              <h3 className="text-lg font-bold text-gray-800">Jane Smith</h3>
-              <p className="text-gray-600">Head of Marketing</p>
-            </div>
-            <div className="bg-red-200 rounded-lg shadow-md p-6">
-              <img
-                src={profile}
-                alt="Team Member"
-                className="rounded-full mx-auto mb-4"
-              />
-              <h3 className="text-lg font-bold text-gray-800">Alice Brown</h3>
-              <p className="text-gray-600">Operations Manager</p>
-            </div>
+          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-8">
+            {[
+              {
+                title: "Customer First",
+                desc: "Every decision we make starts with our customers in mind.",
+                icon: "💖",
+              },
+              {
+                title: "Quality Products",
+                desc: "We deliver only products that meet our quality standards.",
+                icon: "⭐",
+              },
+              {
+                title: "Sustainability",
+                desc: "Committed to eco-friendly and responsible practices.",
+                icon: "🌱",
+              },
+              {
+                title: "Innovation",
+                desc: "Continuously evolving to improve your experience.",
+                icon: "🚀",
+              },
+            ].map((item, index) => (
+              <div
+                key={index}
+                className="bg-gray-50 rounded-2xl p-6 text-center shadow hover:shadow-lg transition"
+              >
+                <div className="text-4xl mb-4">{item.icon}</div>
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                  {item.title}
+                </h3>
+                <p className="text-gray-600 text-sm">{item.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
+      </section>
 
-        {/* Contact Section */}
-        <div className="bg-red-500 text-white rounded-lg shadow-lg p-8 text-center">
-          <h2 className="text-2xl font-semibold mb-4">
-            Have Questions? We’d Love to Help!
+      {/* TEAM SECTION */}
+      <section className="container mx-auto px-6 py-16">
+        <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
+          Meet Our Team
+        </h2>
+        <p className="text-center text-gray-600 max-w-2xl mx-auto mb-12">
+          Behind E-Shop is a passionate team dedicated to building a better
+          shopping experience for you.
+        </p>
+
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-8">
+          {[
+            { name: "John Doe", role: "Founder & CEO" },
+            { name: "Jane Smith", role: "Head of Marketing" },
+            { name: "Alice Brown", role: "Operations Manager" },
+          ].map((member, index) => (
+            <div
+              key={index}
+              className="bg-white rounded-2xl shadow hover:shadow-xl transition p-6 text-center"
+            >
+              <img
+                src={profileImage}
+                alt={member.name}
+                className="w-28 h-28 rounded-full mx-auto mb-4 object-cover"
+              />
+              <h3 className="text-lg font-semibold text-gray-800">
+                {member.name}
+              </h3>
+              <p className="text-gray-500 text-sm">{member.role}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* CALL TO ACTION */}
+      <section className="bg-gradient-to-r from-red-600 to-red-500 text-white py-16">
+        <div className="container mx-auto px-6 text-center">
+          <h2 className="text-3xl font-bold mb-4">
+            Have Questions or Need Support?
           </h2>
-          <p className="mb-6">
-            Reach out to us anytime at <span className="font-semibold">support@eshop.com</span> or call us at <span className="font-semibold">+123 456 7890</span>.
+          <p className="mb-8 text-red-100">
+            Our support team is always ready to help you.
           </p>
-          <button className="bg-white text-red-600 font-semibold py-2 px-6 rounded-lg hover:bg-gray-200">
+          <button className="bg-white text-red-600 font-semibold px-8 py-3 rounded-xl hover:bg-gray-100 transition">
             Contact Us
           </button>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

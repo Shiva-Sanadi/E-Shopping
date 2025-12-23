@@ -21,13 +21,13 @@ const Order = ({order}) => {
                 {order.products.map(product => (
                     <div key={product.id} className="flex justify-between mt-2">
                         <p>{product.name} x {product.totalQuantity}</p>
-                        <p>${product.price * product.totalQuantity}</p>
+                        <p>₹{product.price * product.totalQuantity}</p>
                     </div>
                 ))}
             </div>
             <div className="mt-4 flex justify-between">
                 <span>Total Price</span>
-                <span className="font-semibold">${order.totalPrice.toFixed(2)}</span>
+                <span className="font-semibold">₹{order.totalPrice.toFixed(2)}</span>
             </div> 
             <div className="mt-6">
                 <buton className="bg-green-500 text-white py-2 px-4 hover:bg-green-600">Order tracking</buton>

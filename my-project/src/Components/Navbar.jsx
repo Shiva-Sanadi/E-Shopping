@@ -1,233 +1,186 @@
-import { Link } from "react-router-dom";
 import { useState } from "react";
-import { useSelector } from "react-redux";
-import { 
-  FaShoppingCart, 
-  FaUser, 
-  FaHeart, 
+import { NavLink, Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  FaSearch,
+  FaShoppingCart,
+  FaUser,
+  FaHeart,
   FaBalanceScale,
-  FaBars,
-  FaTimes 
 } from "react-icons/fa";
-import Modal from "./Modal";
-import Login from "./Login";
-import Register from "./Register";
+import { logout } from "../redux/AuthSlice";
 import AdvancedSearchBar from "./AdvancedSearchBar";
+import Modal from "./Modal";
+import AddProduct from "./AddProduct";
 
 const Navbar = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isLogin, setIsLogin] = useState(true);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const [isAddProductOpen, setIsAddProductOpen] = useState(false);
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
   const cart = useSelector((state) => state.cart);
   const wishlist = useSelector((state) => state.wishlist.items);
   const comparison = useSelector((state) => state.comparison.products);
 
-  const openSignUp = () => {
-    setIsLogin(false);
-    setIsModalOpen(true);
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/");
+    setShowUserMenu(false);
   };
 
-  const openLogin = () => {
-    setIsLogin(true);
-    setIsModalOpen(true);
-  };
-
-  const IconWithBadge = ({ icon: Icon, count, color = "bg-red-500" }) => (
-    <div className="relative">
-      <Icon className="text-xl" />
-      {count > 0 && (
-        <span
-          className={`absolute -top-2 -right-2 ${color} text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold`}
-        >
-          {count > 9 ? "9+" : count}
-        </span>
-      )}
-    </div>
-  );
+  /** 🔥 Animated underline nav link */
+  const navLinkClass = ({ isActive }) =>
+    `relative pb-1 transition-colors duration-300
+     ${isActive ? "text-red-600 font-semibold" : "text-gray-700 hover:text-red-600"}
+     after:content-[''] after:absolute after:left-0 after:-bottom-1
+     after:h-[2px] after:w-full after:bg-red-600
+     after:scale-x-0 after:origin-left after:transition-transform after:duration-300
+     ${isActive ? "after:scale-x-100" : "hover:after:scale-x-100"}`;
 
   return (
-    <nav className="bg-white shadow-md sticky top-0 z-40">
+    <nav className="bg-white shadow-md sticky top-0 z-50">
       <div className="container mx-auto px-4 md:px-16 lg:px-24 py-4">
-        {/* Top Bar */}
-        <div className="flex justify-between items-center">
+        <div className="flex items-center justify-between">
           {/* Logo */}
-          <div className="text-2xl font-bold text-red-600">
-            <Link to="/">E-Shop</Link>
-          </div>
+          <Link to="/" className="text-2xl font-bold text-red-600">
+            E-Shop
+          </Link>
 
-          {/* Search Bar - Desktop */}
-          <div className="hidden md:block flex-1 max-w-2xl">
+          {/* Search Bar */}
+          <div className="hidden md:flex flex-1 mx-8">
             <AdvancedSearchBar />
           </div>
 
-          {/* Icons */}
+          {/* Right Icons */}
           <div className="flex items-center space-x-4">
+            <button className="md:hidden text-gray-700">
+              <FaSearch className="text-xl" />
+            </button>
+
+            {/* Admin Add Product */}
+            {isAuthenticated && user?.role === "ADMIN" && (
+              <button
+                onClick={() => setIsAddProductOpen(true)}
+                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm font-semibold"
+              >
+                + Add Product
+              </button>
+            )}
+
             {/* Wishlist */}
-            <Link
+            <NavLink
               to="/wishlist"
-              className="relative hover:text-red-600 transition-colors hidden md:block"
-              title="Wishlist"
+              className={({ isActive }) =>
+                `relative ${
+                  isActive ? "text-red-600" : "text-gray-700 hover:text-red-600"
+                }`
+              }
             >
-              <IconWithBadge
-                icon={FaHeart}
-                count={wishlist.length}
-                color="bg-pink-500"
-              />
-            </Link>
-
-            {/* Comparison */}
-            <Link
-              to="/compare"
-              className="relative hover:text-red-600 transition-colors hidden md:block"
-              title="Compare Products"
-            >
-              <IconWithBadge
-                icon={FaBalanceScale}
-                count={comparison.length}
-                color="bg-blue-500"
-              />
-            </Link>
-
-            {/* Cart */}
-            <Link
-              to="/cart"
-              className="relative hover:text-red-600 transition-colors"
-              title="Shopping Cart"
-            >
-              <IconWithBadge
-                icon={FaShoppingCart}
-                count={cart.totalQuantity}
-                color="bg-red-500"
-              />
-            </Link>
-
-            {/* Login/Register - Desktop */}
-            <button
-              className="hidden md:flex items-center gap-2 border border-gray-300 bg-gray-100 rounded-lg px-4 py-2 font-medium hover:bg-gray-200 transition-colors"
-              onClick={() => setIsModalOpen(true)}
-            >
-              <FaUser />
-              <span>Login</span>
-            </button>
-
-            {/* Mobile Menu Toggle */}
-            <button
-              className="md:hidden text-2xl"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              {mobileMenuOpen ? <FaTimes /> : <FaBars />}
-            </button>
-          </div>
-        </div>
-
-        {/* Search Bar - Mobile */}
-        <div className="md:hidden mt-4">
-          <AdvancedSearchBar />
-        </div>
-
-        {/* Navigation Links - Desktop */}
-        <div className="hidden md:flex items-center justify-center space-x-8 py-4 text-sm font-bold border-t mt-4">
-          <Link to="/" className="hover:text-red-600 transition-colors">
-            Home
-          </Link>
-          <Link to="/shop" className="hover:text-red-600 transition-colors">
-            Shop
-          </Link>
-          {/* <Link to="/advanced-shop" className="hover:text-red-600 transition-colors">
-            Advanced Shop
-          </Link> */}
-          <Link to="/contact" className="hover:text-red-600 transition-colors">
-            Contact
-          </Link>
-          <Link to="/about" className="hover:text-red-600 transition-colors">
-            About
-          </Link>
-        </div>
-      </div>
-
-      {/* Mobile Menu */}
-      {mobileMenuOpen && (
-        <div className="md:hidden bg-white border-t">
-          <div className="container mx-auto px-4 py-4 space-y-4">
-            {/* Mobile Navigation Links */}
-            <Link
-              to="/"
-              className="block py-2 hover:text-red-600 transition-colors"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Home
-            </Link>
-            <Link
-              to="/shop"
-              className="block py-2 hover:text-red-600 transition-colors"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Shop
-            </Link>
-            <Link
-              to="/advanced-shop"
-              className="block py-2 hover:text-red-600 transition-colors"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Advanced Shop
-            </Link>
-            <Link
-              to="/wishlist"
-              className="flex items-center justify-between py-2 hover:text-red-600 transition-colors"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <span>Wishlist</span>
+              <FaHeart className="text-xl" />
               {wishlist.length > 0 && (
-                <span className="bg-pink-500 text-white text-xs px-2 py-1 rounded-full">
+                <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                   {wishlist.length}
                 </span>
               )}
-            </Link>
-            <Link
+            </NavLink>
+
+            {/* Compare */}
+            <NavLink
               to="/compare"
-              className="flex items-center justify-between py-2 hover:text-red-600 transition-colors"
-              onClick={() => setMobileMenuOpen(false)}
+              className={({ isActive }) =>
+                `relative ${
+                  isActive ? "text-red-600" : "text-gray-700 hover:text-red-600"
+                }`
+              }
             >
-              <span>Compare</span>
+              <FaBalanceScale className="text-xl" />
               {comparison.length > 0 && (
-                <span className="bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
+                <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                   {comparison.length}
                 </span>
               )}
-            </Link>
-            <Link
-              to="/contact"
-              className="block py-2 hover:text-red-600 transition-colors"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Contact
-            </Link>
-            <Link
-              to="/about"
-              className="block py-2 hover:text-red-600 transition-colors"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              About
-            </Link>
+            </NavLink>
 
-            {/* Mobile Login Button */}
-            <button
-              className="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors"
-              onClick={() => {
-                setIsModalOpen(true);
-                setMobileMenuOpen(false);
-              }}
+            {/* Cart */}
+            <NavLink
+              to="/cart"
+              className={({ isActive }) =>
+                `relative ${
+                  isActive ? "text-red-600" : "text-gray-700 hover:text-red-600"
+                }`
+              }
             >
-              Login / Register
+              <FaShoppingCart className="text-xl" />
+              {cart.totalQuantity > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {cart.totalQuantity}
+                </span>
+              )}
+            </NavLink>
+
+            {/* User Menu */}
+            <div className="relative">
+              {isAuthenticated ? (
+                <>
+                  <button
+                    onClick={() => setShowUserMenu(!showUserMenu)}
+                    className="flex items-center space-x-2 text-gray-700 hover:text-red-600"
+                  >
+                    <FaUser className="text-xl" />
+                    <span className="hidden md:inline">{user?.name}</span>
+                  </button>
+
+                  {showUserMenu && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50">
+                      <Link to="/profile" className="block px-4 py-2 hover:bg-gray-100">
+                        My Profile
+                      </Link>
+                      <Link to="/orders" className="block px-4 py-2 hover:bg-gray-100">
+                        My Orders
+                      </Link>
+                      <button
+                        onClick={handleLogout}
+                        className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <Link to="/login" className="flex items-center gap-2 hover:text-red-600">
+                  <FaUser /> Login
+                </Link>
+              )}
+            </div>
+
+            {/* Mobile Toggle */}
+            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden">
+              ☰
             </button>
           </div>
         </div>
-      )}
+      </div>
 
-      {/* Login/Register Modal */}
-      <Modal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen}>
-        {isLogin ? <Login openSignUp={openSignUp} /> : <Register openLogin={openLogin} />}
+      {/* Desktop Links */}
+      <div className="hidden md:block bg-gray-100 border-t">
+        <div className="container mx-auto px-4 md:px-16 lg:px-24">
+          <div className="flex space-x-8 py-3">
+            <NavLink to="/" className={navLinkClass}>Home</NavLink>
+            <NavLink to="/shop" className={navLinkClass}>Shop</NavLink>
+            <NavLink to="/about" className={navLinkClass}>About</NavLink>
+            <NavLink to="/contact" className={navLinkClass}>Contact</NavLink>
+          </div>
+        </div>
+      </div>
+
+      {/* Add Product Modal */}
+      <Modal isModalOpen={isAddProductOpen} setIsModalOpen={setIsAddProductOpen}>
+        <AddProduct onSuccess={() => setIsAddProductOpen(false)} />
       </Modal>
     </nav>
   );

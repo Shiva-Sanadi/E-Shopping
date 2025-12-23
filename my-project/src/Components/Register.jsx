@@ -1,50 +1,111 @@
 
-import  { useState } from 'react';
-import axios from 'axios';
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { registerUser, clearError } from "../redux/AuthSlice";
 
-const Register = ({openLogin}) => {
+const Register = ({ openLogin }) => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { loading, error, isAuthenticated } = useSelector((state) => state.auth);
 
-    const navigate = useNavigate();
-    const [form, setForm] = useState({ name: '', email: '', password: '' });
-  
-    const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
-  
-    const register = async () => {
-      await axios.post('http://localhost:8000/auth/register', form);
-      alert('Registered successfully!');
-       navigate("/login");
+  const [form, setForm] = useState({ name: "", email: "", password: "" });
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated, navigate]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearError());
     };
+  }, [dispatch]);
+
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+
+  const register = async (e) => {
+    e.preventDefault();
+    dispatch(registerUser(form));
+  };
 
   return (
-    <div>
-        <h2 className="text-2xl font-bold mb-4">Sign Up</h2>
-        <form>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h2 className="text-2xl font-bold mb-4 text-center">Sign Up</h2>
         
-            <div className="mb-4">
-                <label htmlFor="" className="block text-gray-700" onChange={handleChange}>Name</label>
-                <input type="text" placeholder="Enter Name" className="w-full px-3 py-2 border"/>
+        <form onSubmit={register} className="space-y-4">
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded">
+              {error}
             </div>
-            <div className="mb-4">
-                <label htmlFor="" className="block text-gray-700" onChange={handleChange}>Email</label>
-                <input type="email" className="w-full px-3 py-2 border placeholder:Enter Email"/>
-            </div>
-            <div className="mb-4">
-                <label htmlFor="" className="block text-gray-700" onChange={handleChange}>Password</label>
-                <input type="password" placeholder="Enter Password" className="w-full px-3 py-2 border"/>
-            </div>
-            <div className="mb-4">
-                <button type="submit" className="w-full bg-red-600 text-white py-2" onClick={register}>Sign Up</button>
-            </div>
+          )}
+          
+          <div>
+            <label className="block text-gray-700 mb-1">Name</label>
+            <input
+              type="text"
+              name="name"
+              value={form.name}
+              onChange={handleChange}
+              placeholder="Enter Name"
+              className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-red-500 outline-none"
+              required
+            />
+          </div>
+          
+          <div>
+            <label className="block text-gray-700 mb-1">Email</label>
+            <input
+              type="email"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              placeholder="Enter Email"
+              className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-red-500 outline-none"
+              required
+            />
+          </div>
+          
+          <div>
+            <label className="block text-gray-700 mb-1">Password</label>
+            <input
+              type="password"
+              name="password"
+              value={form.password}
+              onChange={handleChange}
+              placeholder="Enter Password"
+              className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-red-500 outline-none"
+              required
+              minLength={6}
+            />
+          </div>
+          
+          <button
+            type="submit"
+            disabled={loading}
+            className={`w-full py-2 bg-red-600 text-white rounded hover:bg-red-700 transition ${
+              loading ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+          >
+            {loading ? "Signing up..." : "Sign Up"}
+          </button>
         </form>
-        <div className="text-center">
-            <span className="text-gray-700">Already Have an Account?</span>
-            <button className="text-red-800" onClick={openLogin} >LogIn</button>
-            <a href="http://localhost:8000/auth/google"
-          className="w-full block text-center bg-red-500 text-white py-2 rounded-lg mt-2 hover:bg-red-600">Login with Google</a>
-        </div>
-    </div>
-  )
-}
+        
+        <div className="text-center mt-4">
+  <span className="text-gray-700">Already have an account?</span>
+  <button
+    className="ml-2 text-red-800 font-bold"
+    onClick={() => navigate("/login")}
+  >
+    Log In
+  </button>
+</div>
 
-export default Register
+      </div>
+    </div>
+  );
+};
+
+export default Register;

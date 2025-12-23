@@ -1,47 +1,66 @@
-import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+
+import { useState, useEffect, useMemo } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchProducts } from "../redux/ProductSlice";
 import ProductCard from "../Components/ProductCard";
 import { FaFilter, FaTimes } from "react-icons/fa";
 
 const Shop = () => {
-  const products = useSelector((state) => state.product.products);
-  const [filteredProducts, setFilteredProducts] = useState([]);
-  const [filters, setFilters] = useState({
-    category: "all",
-    priceRange: [0, 1000],
-    sortBy: "default",
-    rating: 0,
-  });
+  const dispatch = useDispatch();
+  const { products, loading, error } = useSelector((state) => state.product);
+
   const [showFilters, setShowFilters] = useState(true);
   const [categories, setCategories] = useState([]);
 
+  const [filters, setFilters] = useState({
+    category: "all",
+    minPrice: 0,
+    maxPrice: 0,
+    sortBy: "default",
+    rating: 0,
+  });
+
+  /* ---------------- FETCH PRODUCTS ---------------- */
   useEffect(() => {
-    // Extract unique categories
-    const uniqueCategories = [...new Set(products.map((p) => p.category))];
-    setCategories(uniqueCategories);
+    dispatch(fetchProducts());
+  }, [dispatch]);
+
+  /* ---------------- SET CATEGORIES + PRICE RANGE ---------------- */
+  useEffect(() => {
+    if (products.length > 0) {
+      setCategories([...new Set(products.map((p) => p.category))]);
+
+      const prices = products.map((p) => p.price);
+      const max = Math.max(...prices);
+
+      setFilters((prev) => ({
+        ...prev,
+        minPrice: 0,
+        maxPrice: max,
+      }));
+    }
   }, [products]);
 
-  useEffect(() => {
+  /* ---------------- FILTER + SORT (MEMOIZED) ---------------- */
+  const filteredProducts = useMemo(() => {
     let result = [...products];
 
-    // Category filter
+    // Category
     if (filters.category !== "all") {
-      result = result.filter((product) => product.category === filters.category);
+      result = result.filter((p) => p.category === filters.category);
     }
 
-    // Price range filter
+    // Price
     result = result.filter(
-      (product) =>
-        product.price >= filters.priceRange[0] &&
-        product.price <= filters.priceRange[1]
+      (p) => p.price >= filters.minPrice && p.price <= filters.maxPrice
     );
 
-    // Rating filter
+    // Rating
     if (filters.rating > 0) {
-      result = result.filter((product) => (product.rating?.rate || 0) >= filters.rating);
+      result = result.filter((p) => (p.rating?.rate || 0) >= filters.rating);
     }
 
-    // Sort
+    // Sorting
     switch (filters.sortBy) {
       case "price-low":
         result.sort((a, b) => a.price - b.price);
@@ -59,164 +78,187 @@ const Shop = () => {
         break;
     }
 
-    setFilteredProducts(result);
+    return result;
   }, [products, filters]);
 
-  const handlePriceChange = (index, value) => {
-    const newRange = [...filters.priceRange];
-    newRange[index] = parseFloat(value);
-    setFilters({ ...filters, priceRange: newRange });
-  };
-
+  /* ---------------- RESET FILTERS ---------------- */
   const resetFilters = () => {
+    const max = Math.max(...products.map((p) => p.price));
     setFilters({
       category: "all",
-      priceRange: [0, 1000],
+      minPrice: 0,
+      maxPrice: max,
       sortBy: "default",
       rating: 0,
     });
   };
 
+  /* ---------------- LOADING & ERROR ---------------- */
+  if (loading) {
+    return (
+      <div className="container mx-auto py-16 text-center">
+        <div className="animate-spin h-12 w-12 border-b-2 border-red-600 mx-auto" />
+        <p className="mt-4 text-gray-600">Loading products...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto py-16">
+        <div className="bg-red-50 border border-red-200 text-red-600 p-4 rounded">
+          <p className="font-semibold">Error loading products</p>
+          <p>{error}</p>
+          <button
+            onClick={() => dispatch(fetchProducts())}
+            className="mt-3 bg-red-600 text-white px-4 py-2 rounded"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  /* ---------------- UI ---------------- */
   return (
     <div className="container mx-auto py-8 px-4 md:px-16 lg:px-24">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex justify-between items-center mb-6">
         <h2 className="text-3xl font-bold">Shop</h2>
         <button
           onClick={() => setShowFilters(!showFilters)}
-          className="md:hidden flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg"
+          className="md:hidden flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded"
         >
-          <FaFilter /> {showFilters ? "Hide" : "Show"} Filters
+          <FaFilter /> Filters
         </button>
       </div>
 
       <div className="flex flex-col md:flex-row gap-6">
-        {/* Filters Sidebar */}
-        <div
+        {/* ---------------- FILTERS ---------------- */}
+        <aside
           className={`${
             showFilters ? "block" : "hidden"
-          } md:block md:w-1/4 bg-white p-6 rounded-lg shadow-md h-fit sticky top-4`}
+          } md:block md:w-1/4 bg-white p-6 rounded-lg shadow sticky top-4`}
         >
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex justify-between mb-6">
             <h3 className="text-xl font-semibold">Filters</h3>
             <button
               onClick={resetFilters}
-              className="text-sm text-red-600 hover:text-red-800 flex items-center gap-1"
+              className="text-sm text-red-600 flex items-center gap-1"
             >
               <FaTimes /> Reset
             </button>
           </div>
 
-          {/* Category Filter */}
+          {/* Category */}
           <div className="mb-6">
-            <h4 className="font-semibold mb-3 text-gray-700">Category</h4>
+            <h4 className="font-semibold mb-2">Category</h4>
             <select
               value={filters.category}
-              onChange={(e) => setFilters({ ...filters, category: e.target.value })}
-              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 outline-none"
+              onChange={(e) =>
+                setFilters({ ...filters, category: e.target.value })
+              }
+              className="w-full border rounded p-2"
             >
-              <option value="all">All Categories</option>
-              {categories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat.charAt(0).toUpperCase() + cat.slice(1)}
+              <option value="all">All</option>
+              {categories.map((c) => (
+                <option key={c} value={c}>
+                  {c}
                 </option>
               ))}
             </select>
           </div>
 
-          {/* Price Range Filter */}
+          {/* Price */}
           <div className="mb-6">
-            <h4 className="font-semibold mb-3 text-gray-700">Price Range</h4>
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm text-gray-600">Min: ${filters.priceRange[0]}</label>
-                <input
-                  type="range"
-                  min="0"
-                  max="1000"
-                  value={filters.priceRange[0]}
-                  onChange={(e) => handlePriceChange(0, e.target.value)}
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                />
-              </div>
-              <div>
-                <label className="text-sm text-gray-600">Max: ${filters.priceRange[1]}</label>
-                <input
-                  type="range"
-                  min="0"
-                  max="1000"
-                  value={filters.priceRange[1]}
-                  onChange={(e) => handlePriceChange(1, e.target.value)}
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                />
-              </div>
-              <div className="flex justify-between text-sm font-semibold text-gray-700">
-                <span>${filters.priceRange[0]}</span>
-                <span>${filters.priceRange[1]}</span>
-              </div>
-            </div>
+            <h4 className="font-semibold mb-2">Price</h4>
+            <label className="text-sm">Min: ₹{filters.minPrice}</label>
+            <input
+              type="range"
+              min="0"
+              max={filters.maxPrice}
+              value={filters.minPrice}
+              onChange={(e) =>
+                setFilters({ ...filters, minPrice: Number(e.target.value) })
+              }
+              className="w-full"
+            />
+
+            <label className="text-sm mt-2 block">
+              Max: ₹{filters.maxPrice}
+            </label>
+            <input
+              type="range"
+              min="0"
+              max={filters.maxPrice}
+              value={filters.maxPrice}
+              onChange={(e) =>
+                setFilters({ ...filters, maxPrice: Number(e.target.value) })
+              }
+              className="w-full"
+            />
           </div>
 
-          {/* Rating Filter */}
+          {/* Rating */}
           <div className="mb-6">
-            <h4 className="font-semibold mb-3 text-gray-700">Minimum Rating</h4>
-            <div className="space-y-2">
-              {[4, 3, 2, 1, 0].map((rating) => (
-                <label key={rating} className="flex items-center cursor-pointer">
-                  <input
-                    type="radio"
-                    name="rating"
-                    checked={filters.rating === rating}
-                    onChange={() => setFilters({ ...filters, rating })}
-                    className="mr-2"
-                  />
-                  <span className="text-sm">
-                    {rating === 0 ? "All Ratings" : `${rating}+ Stars`}
-                  </span>
-                </label>
-              ))}
-            </div>
+            <h4 className="font-semibold mb-2">Rating</h4>
+            {[4, 3, 2, 1, 0].map((r) => (
+              <label key={r} className="block">
+                <input
+                  type="radio"
+                  checked={filters.rating === r}
+                  onChange={() => setFilters({ ...filters, rating: r })}
+                />{" "}
+                {r === 0 ? "All" : `${r}+ stars`}
+              </label>
+            ))}
           </div>
 
-          {/* Sort By */}
-          <div className="mb-6">
-            <h4 className="font-semibold mb-3 text-gray-700">Sort By</h4>
+          {/* Sort */}
+          <div>
+            <h4 className="font-semibold mb-2">Sort By</h4>
             <select
               value={filters.sortBy}
-              onChange={(e) => setFilters({ ...filters, sortBy: e.target.value })}
-              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 outline-none"
+              onChange={(e) =>
+                setFilters({ ...filters, sortBy: e.target.value })
+              }
+              className="w-full border rounded p-2"
             >
               <option value="default">Default</option>
-              <option value="price-low">Price: Low to High</option>
-              <option value="price-high">Price: High to Low</option>
-              <option value="rating">Highest Rated</option>
-              <option value="name">Name: A to Z</option>
+              <option value="price-low">Price ↑</option>
+              <option value="price-high">Price ↓</option>
+              <option value="rating">Rating</option>
+              <option value="name">Name</option>
             </select>
           </div>
-        </div>
+        </aside>
 
-        {/* Products Grid */}
-        <div className="md:w-3/4">
-          <div className="mb-4 text-gray-600">
-            Showing {filteredProducts.length} of {products.length} products
-          </div>
-          {filteredProducts.length > 0 ? (
+        {/* ---------------- PRODUCTS ---------------- */}
+        <main className="md:w-3/4">
+          <p className="mb-4 text-gray-600">
+            Showing {filteredProducts.length} of {products.length}
+          </p>
+
+          {filteredProducts.length ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
+              {filteredProducts.map((p) => (
+                <ProductCard key={p.id} product={p} />
               ))}
             </div>
           ) : (
-            <div className="text-center py-12">
-              <p className="text-xl text-gray-600">No products found matching your filters</p>
+            <div className="text-center py-16">
+              <p className="text-gray-600 text-xl">
+                No products match your filters
+              </p>
               <button
                 onClick={resetFilters}
-                className="mt-4 bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700"
+                className="mt-4 bg-red-600 text-white px-6 py-2 rounded"
               >
                 Reset Filters
               </button>
             </div>
           )}
-        </div>
+        </main>
       </div>
     </div>
   );

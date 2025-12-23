@@ -1,11 +1,17 @@
-// ProductReviews.jsx
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { FaStar, FaRegStar, FaEdit, FaTrash, FaThumbsUp } from "react-icons/fa";
-import { addReview, updateReview, deleteReview } from "../redux/ReviewSlice";
+import { 
+  fetchProductReviews, 
+  addReview, 
+  updateReview, 
+  deleteReview 
+} from "../redux/ReviewSlice";
 
 const ProductReviews = ({ productId }) => {
   const dispatch = useDispatch();
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
   const reviews = useSelector((state) => state.reviews.reviews[productId] || []);
   const [showForm, setShowForm] = useState(false);
   const [editingReview, setEditingReview] = useState(null);
@@ -17,8 +23,18 @@ const ProductReviews = ({ productId }) => {
   });
   const [sortBy, setSortBy] = useState("newest");
 
+  useEffect(() => {
+    dispatch(fetchProductReviews(productId));
+  }, [dispatch, productId]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (!isAuthenticated) {
+      alert("Please login to write a review");
+      return;
+    }
+
     if (editingReview) {
       dispatch(
         updateReview({
@@ -31,7 +47,8 @@ const ProductReviews = ({ productId }) => {
     } else {
       dispatch(addReview({ productId, review: formData }));
     }
-    setFormData({ name: "", rating: 5, title: "", comment: "" });
+    
+    setFormData({ name: user?.name || "", rating: 5, title: "", comment: "" });
     setShowForm(false);
   };
 
@@ -128,16 +145,26 @@ const ProductReviews = ({ productId }) => {
           </div>
         </div>
 
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="mt-4 w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700"
-        >
-          Write a Review
-        </button>
+        {isAuthenticated ? (
+          <button
+            onClick={() => {
+              setShowForm(!showForm);
+              setFormData({ name: user?.name || "", rating: 5, title: "", comment: "" });
+              setEditingReview(null);
+            }}
+            className="mt-4 w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700"
+          >
+            Write a Review
+          </button>
+        ) : (
+          <div className="mt-4 text-center text-gray-600">
+            Please login to write a review
+          </div>
+        )}
       </div>
 
       {/* Review Form */}
-      {showForm && (
+      {showForm && isAuthenticated && (
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <h3 className="text-xl font-semibold mb-4">
             {editingReview ? "Edit Review" : "Write Your Review"}
@@ -235,20 +262,22 @@ const ProductReviews = ({ productId }) => {
                 </div>
                 <h4 className="font-semibold text-lg">{review.title}</h4>
               </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => handleEdit(review)}
-                  className="text-blue-600 hover:text-blue-800"
-                >
-                  <FaEdit />
-                </button>
-                <button
-                  onClick={() => handleDelete(review.id)}
-                  className="text-red-600 hover:text-red-800"
-                >
-                  <FaTrash />
-                </button>
-              </div>
+              {isAuthenticated && user?.name === review.name && (
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleEdit(review)}
+                    className="text-blue-600 hover:text-blue-800"
+                  >
+                    <FaEdit />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(review.id)}
+                    className="text-red-600 hover:text-red-800"
+                  >
+                    <FaTrash />
+                  </button>
+                </div>
+              )}
             </div>
             <p className="text-gray-600 mb-3">{review.comment}</p>
             <div className="flex items-center justify-between text-sm text-gray-500">

@@ -1,23 +1,38 @@
+
 import { FaStar, FaHeart, FaRegHeart } from "react-icons/fa";
 import { addToCart } from "../redux/CartSlice";
 import { addToWishlist, removeFromWishlist } from "../redux/WishlistSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { getImageUrl } from "../utils/imageHelper";
 
 const ProductCard = ({ product }) => {
   const dispatch = useDispatch();
+  const { isAuthenticated } = useSelector((state) => state.auth);
   const wishlist = useSelector((state) => state.wishlist.items);
   const isInWishlist = wishlist.some((item) => item.id === product.id);
 
   const handleAddToCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    dispatch(addToCart(product));
+    
+    if (isAuthenticated) {
+      dispatch(addToCart(product));
+    } else {
+      // For non-authenticated users, you might want to show a login prompt
+      alert("Please login to add items to cart");
+    }
   };
 
   const handleWishlistToggle = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    
+    if (!isAuthenticated) {
+      alert("Please login to add items to wishlist");
+      return;
+    }
+    
     isInWishlist
       ? dispatch(removeFromWishlist(product.id))
       : dispatch(addToWishlist(product));
@@ -30,23 +45,29 @@ const ProductCard = ({ product }) => {
         {/* Image */}
         <div className="relative p-4 h-48 flex items-center justify-center">
           <img
-            src={product.image}
+            src={getImageUrl(product.image)}
             alt={product.title}
             className="max-h-full object-contain"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = 'https://via.placeholder.com/300x300?text=No+Image';
+            }}
           />
 
-          {/* Wishlist */}
-          <button
-            onClick={handleWishlistToggle}
-            className="absolute top-3 right-3 bg-white rounded-full p-2 shadow hover:bg-gray-100 transition"
-            aria-label="Add to wishlist"
-          >
-            {isInWishlist ? (
-              <FaHeart className="text-red-600 text-lg" />
-            ) : (
-              <FaRegHeart className="text-gray-400 text-lg" />
-            )}
-          </button>
+          {/* Wishlist Button */}
+          {isAuthenticated && (
+            <button
+              onClick={handleWishlistToggle}
+              className="absolute top-3 right-3 bg-white rounded-full p-2 shadow hover:bg-gray-100 transition"
+              aria-label="Add to wishlist"
+            >
+              {isInWishlist ? (
+                <FaHeart className="text-red-600 text-lg" />
+              ) : (
+                <FaRegHeart className="text-gray-400 text-lg" />
+              )}
+            </button>
+          )}
         </div>
 
         {/* Content */}
