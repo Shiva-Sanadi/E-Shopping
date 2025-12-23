@@ -1,0 +1,152 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+
+  addresses Address[]
+  cartItems CartItem[]
+  wishlist  Wishlist[]
+  orders    Order[]
+  reviews   Review[]
+}
+
+model Address {
+  id      Int    @id @default(autoincrement())
+  userId  Int
+  address String
+  city    String
+  zip     String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Category {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  products Product[]
+}
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String   @db.Text
+  price       Decimal  @db.Decimal(10, 2)
+  stock       Int      @default(0)
+  category    String
+  image       String
+  createdAt   DateTime @default(now())
+
+  cartItems  CartItem[]
+  wishlist   Wishlist[]
+  orderItems OrderItem[]
+  reviews    Review[]
+  Category   Category?   @relation(fields: [categoryId], references: [id])
+  categoryId Int?
+}
+
+model CartItem {
+  id        Int @id @default(autoincrement())
+  userId    Int
+  productId Int
+  quantity  Int @default(1)
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([userId])
+  @@index([productId])
+}
+
+model Wishlist {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  productId Int
+  addedAt   DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([userId])
+  @@index([productId])
+}
+
+model Order {
+  id              Int         @id @default(autoincrement())
+  orderNumber     String      @unique
+  userId          Int
+  totalPrice      Decimal     @db.Decimal(10, 2)
+  shippingAddress String
+  shippingCity    String
+  shippingZip     String
+  paymentMethod   String
+  status          OrderStatus @default(PENDING)
+  createdAt       DateTime    @default(now())
+
+  user  User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items OrderItem[]
+
+  @@index([userId])
+  @@index([orderNumber])
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  orderId   Int
+  productId Int
+  quantity  Int
+  price     Decimal @db.Decimal(10, 2)
+  name      String
+  image     String
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  productId Int
+  name      String
+  rating    Int
+  title     String
+  comment   String   @db.Text
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([productId])
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
