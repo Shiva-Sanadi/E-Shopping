@@ -1,5 +1,6 @@
 
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { HashRouter } from 'react-router-dom'
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchProfile } from "./redux/AuthSlice";
@@ -45,7 +46,7 @@ const App = () => {
   }, [dispatch, token, isAuthenticated]);
 
   return (
-    <BrowserRouter>
+    <HashRouter>
       <div className="flex flex-col min-h-screen">
         <Navbar />
         <main className="flex-grow">
@@ -106,7 +107,7 @@ const App = () => {
         </main>
         <Footer />
       </div>
-    </BrowserRouter>
+    </HashRouter>
   );
 };
 
