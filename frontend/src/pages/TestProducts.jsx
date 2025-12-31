@@ -2,6 +2,8 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProducts } from "../redux/ProductSlice";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const TestProducts = () => {
   const dispatch = useDispatch();
   const { products, loading, error } = useSelector((state) => state.product);
@@ -52,7 +54,7 @@ const TestProducts = () => {
         <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded mb-6">
           No products found. Try:
           <ol className="list-decimal ml-6 mt-2">
-            <li>Check if backend is running on http://localhost:8000</li>
+            <li>Check if backend is running on `{API_URL}`</li>
             <li>Run: <code className="bg-yellow-200 px-2 py-1 rounded">npm run seed</code> in backend</li>
             <li>Check browser console for errors</li>
           </ol>

@@ -5,13 +5,14 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
 
+const API_URL = import.meta.env.VITE_API_URL;
 // Image helper function
 const getImageUrl = (imagePath) => {
   if (!imagePath) return 'https://via.placeholder.com/100x100?text=No+Image';
   if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
     return imagePath;
   }
-  return `http://localhost:8000${imagePath}`;
+  return `${API_URL}${imagePath}`;
 };
 
 const CheckOut = ({ setOrder }) => {
