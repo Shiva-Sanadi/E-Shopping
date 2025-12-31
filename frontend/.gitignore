@@ -1,0 +1,24 @@
+# node modules
+node_modules/
+backend/node_modules/
+my-project/node_modules/
+
+# env files
+.env
+backend/.env
+my-project/.env
+
+# build
+dist/
+build/
+
+# logs
+*.log
+.DS_Store
+
+# Ignore all node_modules folders in the workspace
+**/node_modules/
+
+
+assets
+404.html
