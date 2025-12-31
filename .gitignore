@@ -18,3 +18,7 @@ build/
 
 # Ignore all node_modules folders in the workspace
 **/node_modules/
+
+
+assets
+404.html
