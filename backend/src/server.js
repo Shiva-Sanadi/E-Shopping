@@ -35,6 +35,12 @@ app.use("/api/cart", require("./routes/cartRoutes"));
 app.use("/api/orders", require("./routes/orderRoutes"));
 app.use("/api/wishlist", require("./routes/wishlistRoutes"));
 app.use("/api/reviews", require("./routes/reviewRoutes"));
+app.use("/api/admin", require("./routes/adminRoutes"));
+app.use("/api/coupons", require("./routes/couponRoutes"));
+app.use("/api/user", require("./routes/userProfileRoutes"));
+app.use("/api/returns", require("./routes/returnRoutes"));
+app.use("/api/notifications", require("./routes/notificationRoutes"));
+app.use("/api/settings", require("./routes/settingsRoutes"));
 
 // Error handler
 app.use((err, req, res, next) => {

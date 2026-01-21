@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useRef, useEffect } from "react";
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -11,12 +12,11 @@ import {
 import { logout } from "../redux/AuthSlice";
 import AdvancedSearchBar from "./AdvancedSearchBar";
 import Modal from "./Modal";
-import AddProduct from "./AddProduct";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [isAddProductOpen, setIsAddProductOpen] = useState(false);
+  const userMenuRef = useRef(null);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -25,6 +25,23 @@ const Navbar = () => {
   const cart = useSelector((state) => state.cart);
   const wishlist = useSelector((state) => state.wishlist.items);
   const comparison = useSelector((state) => state.comparison.products);
+
+  // Close user menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setShowUserMenu(false);
+      }
+    };
+
+    if (showUserMenu) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showUserMenu]);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -61,14 +78,18 @@ const Navbar = () => {
               <FaSearch className="text-xl" />
             </button>
 
-            {/* Admin Add Product */}
+            {/* Admin Dashboard Link */}
             {isAuthenticated && user?.role === "ADMIN" && (
-              <button
-                onClick={() => setIsAddProductOpen(true)}
-                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm font-semibold"
+              <NavLink
+                to="/admin/dashboard"
+                className={({ isActive }) =>
+                  `bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm font-semibold ${
+                    isActive ? "bg-red-700" : ""
+                  }`
+                }
               >
-                + Add Product
-              </button>
+                Admin Panel
+              </NavLink>
             )}
 
             {/* Wishlist */}
@@ -123,7 +144,7 @@ const Navbar = () => {
             </NavLink>
 
             {/* User Menu */}
-            <div className="relative">
+            <div className="relative" ref={userMenuRef}>
               {isAuthenticated ? (
                 <>
                   <button
@@ -135,16 +156,69 @@ const Navbar = () => {
                   </button>
 
                   {showUserMenu && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50">
-                      <Link to="/profile" className="block px-4 py-2 hover:bg-gray-100">
-                        My Profile
+                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg z-50 border border-gray-200">
+                      <div className="px-4 py-3 border-b border-gray-200">
+                        <p className="text-sm font-semibold text-gray-700">{user?.name}</p>
+                        <p className="text-xs text-gray-500">{user?.email}</p>
+                      </div>
+                      <Link 
+                        to="/user/profile" 
+                        className="block px-4 py-2 hover:bg-gray-100"
+                        onClick={() => setShowUserMenu(false)}
+                      >
+                        👤 Profile
                       </Link>
-                      <Link to="/orders" className="block px-4 py-2 hover:bg-gray-100">
-                        My Orders
+                      <Link 
+                        to="/user/orders" 
+                        className="block px-4 py-2 hover:bg-gray-100"
+                        onClick={() => setShowUserMenu(false)}
+                      >
+                        📦 Order History
                       </Link>
+                      <Link 
+                        to="/user/addresses" 
+                        className="block px-4 py-2 hover:bg-gray-100"
+                        onClick={() => setShowUserMenu(false)}
+                      >
+                        📍 Addresses
+                      </Link>
+                      <Link 
+                        to="/user/returns" 
+                        className="block px-4 py-2 hover:bg-gray-100"
+                        onClick={() => setShowUserMenu(false)}
+                      >
+                        ↩️ My Returns
+                      </Link>
+                      <Link 
+                        to="/user/notifications" 
+                        className="block px-4 py-2 hover:bg-gray-100"
+                        onClick={() => setShowUserMenu(false)}
+                      >
+                        🔔 Notifications
+                      </Link>
+                      <Link 
+                        to="/user/settings" 
+                        className="block px-4 py-2 hover:bg-gray-100"
+                        onClick={() => setShowUserMenu(false)}
+                      >
+                        ⚙️ Settings
+                      </Link>
+                      {user?.role === "ADMIN" && (
+                        <>
+                          <div className="border-t my-2"></div>
+                          <Link 
+                            to="/admin/dashboard" 
+                            className="block px-4 py-2 hover:bg-blue-50 text-blue-600 font-semibold"
+                            onClick={() => setShowUserMenu(false)}
+                          >
+                            🔐 Admin Panel
+                          </Link>
+                        </>
+                      )}
+                      <div className="border-t my-2"></div>
                       <button
                         onClick={handleLogout}
-                        className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                        className="block w-full text-left px-4 py-2 hover:bg-red-50 text-red-600"
                       >
                         Logout
                       </button>
@@ -177,11 +251,6 @@ const Navbar = () => {
           </div>
         </div>
       </div>
-
-      {/* Add Product Modal */}
-      <Modal isModalOpen={isAddProductOpen} setIsModalOpen={setIsAddProductOpen}>
-        <AddProduct onSuccess={() => setIsAddProductOpen(false)} />
-      </Modal>
     </nav>
   );
 };

@@ -2,7 +2,7 @@
 import { useState } from "react";
 import api from "../api/axios";
 
-const AddProduct = () => {
+const AddProduct = ({ onSuccess }) => {
   const [formData, setFormData] = useState({
     title: "",
     price: "",
@@ -89,6 +89,11 @@ const AddProduct = () => {
       // Clear file input
       const fileInput = document.getElementById('image-upload');
       if (fileInput) fileInput.value = '';
+
+      // Call onSuccess callback if provided
+      if (onSuccess) {
+        setTimeout(() => onSuccess(), 1000);
+      }
 
     } catch (error) {
       setMessage({ 

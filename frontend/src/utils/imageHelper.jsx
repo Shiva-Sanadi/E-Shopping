@@ -1,35 +1,5 @@
+// Utility functions for handling image URLs and errors
 
-// /**
-//  * Get the full image URL
-//  * Handles both uploaded images and external URLs
-//  */
-// export const getImageUrl = (imagePath) => {
-//   if (!imagePath) {
-//     return 'https://via.placeholder.com/300x300?text=No+Image';
-//   }
-  
-//   // If it's already a full URL, return as is
-//   if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-//     return imagePath;
-//   }
-  
-//   // If it's a relative path, prepend the backend URL
-//   return `http://localhost:8000${imagePath}`;
-// };
-
-// export default getImageUrl;
-
-
-
-
-/**
- * Get the full image URL
- * Handles both uploaded images and external URLs
- * 
- * @param {string} imagePath - The image path/URL from the database
- * @param {string} size - Optional size hint for placeholder ('sm', 'md', 'lg')
- * @returns {string} - Full image URL
- */
 export const getImageUrl = (imagePath, size = 'md') => {
   // Return placeholder if no image
   if (!imagePath || imagePath === '' || imagePath === 'undefined' || imagePath === 'null') {

@@ -7,15 +7,20 @@ import { loginUser, clearError } from "../redux/AuthSlice";
 const Login = ({ openSignUp }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { loading, error, isAuthenticated } = useSelector((state) => state.auth);
+  const { loading, error, isAuthenticated, user } = useSelector((state) => state.auth);
 
   const [form, setForm] = useState({ email: "", password: "" });
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/");
+      // Redirect admins to admin dashboard
+      if (user?.role === "ADMIN") {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/");
+      }
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, user, navigate]);
 
   useEffect(() => {
     return () => {

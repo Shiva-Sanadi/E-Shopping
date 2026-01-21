@@ -1,0 +1,124 @@
+# ========== ENVIRONMENT & SECRETS ==========
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.docker
+*.pem
+*.key
+*.p8
+
+# ========== DEPENDENCIES ==========
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.yarn/install-state.gz
+
+# ========== BUILD OUTPUT ==========
+dist/
+build/
+out/
+*.deb
+*.rpm
+
+# ========== DATABASE ==========
+*.sqlite
+*.sqlite3
+db.sqlite
+prisma/dev.db
+
+# ========== IDE & EDITOR ==========
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.AppleDouble
+.LSOverride
+*.sublime-project
+*.sublime-workspace
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-settings
+
+# ========== OS FILES ==========
+Thumbs.db
+.DS_Store
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+
+# ========== LOGS ==========
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+.pnpm-debug.log*
+
+# ========== TESTING ==========
+coverage/
+.nyc_output/
+junit.xml
+
+# ========== TEMPORARY FILES ==========
+tmp/
+temp/
+*.tmp
+*.bak
+
+# ========== UPLOADS ==========
+uploads/*
+!uploads/.gitkeep
+
+# ========== DEPLOYMENT ==========
+.vercel
+.netlify
+.env.production
+deploy-key*
+
+# ========== WORKSPACE SETTINGS ==========
+.vscode-server/
+remote-packs/
+
+# ========== SYSTEM FILES ==========
+$RECYCLE.BIN/
+.trash/
+
+# ========== BACKEND SPECIFIC ==========
+backend/.env
+backend/node_modules/
+backend/dist/
+backend/build/
+backend/coverage/
+backend/uploads/*
+backend/.env.local
+
+# ========== FRONTEND SPECIFIC ==========
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.env
+frontend/.env.local
+
+# ========== DOCUMENTATION ==========
+docs/generated/
+
+# ========== PACKAGE MANAGER LOCKFILES (Optional) ==========
+# Uncomment based on your preference
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# ========== SECURITY SCANNING TOOLS ==========
+.snyk
+
+# ========== MONITORING ==========
+.sonar/
+.scannerwork/
